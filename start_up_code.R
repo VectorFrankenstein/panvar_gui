@@ -35,31 +35,49 @@ ui <- fluidPage(
         padding: 2px 6px;
         margin-left: 10px;
       }
+      .input-box {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+      }
     "))
   ),
   titlePanel("Optional and Required Inputs with Default Values"),
   sidebarLayout(
     sidebarPanel(
-      h4("Required Inputs"),
-      div(class = "input-group",
-          textInput("requiredText", "Required Text Input:", placeholder = "Must be provided"),
-          tags$span("Required", class = "required-tag")
+      div(class = "input-box",
+          h4("Required Inputs"),
+          div(class = "input-group",
+              textInput("requiredTextNoDefault", "Path to VCF file:", placeholder = "Must be provided"),
+              tags$span("Required", class = "required-tag")
+          ),
+          div(class = "input-group",
+              textInput("requiredTextDefault", "Required Text Input (With Default):", value = "Default Text"),
+              tags$span("Required", class = "required-tag"),
+              tags$span("Default: 'Default Text'", class = "default-tag")
+          )
       ),
       
-      h4("Optional Inputs"),
-      div(class = "input-group",
-          numericInput("optionalNumber", "Optional Numeric Input:", value = NULL),
-          tags$span("Optional", class = "optional-tag")
+      div(class = "input-box",
+          h4("Optional Inputs"),
+          div(class = "input-group",
+              numericInput("optionalNumber", "Optional Numeric Input:", value = NULL),
+              tags$span("Optional", class = "optional-tag")
+          )
       ),
       
-      h4("Inputs with Default Values"),
-      div(class = "input-group",
-          selectInput("dropdown", "Dropdown with Default:", choices = c("Option 1", "Option 2", "Option 3"), selected = "Option 1"),
-          tags$span("Default", class = "default-tag")
-      ),
-      div(class = "input-group",
-          textInput("optionalText", "Optional Text Input with Default:", value = "Default Value"),
-          tags$span("Default", class = "default-tag")
+      div(class = "input-box",
+          h4("Inputs with Default Values"),
+          div(class = "input-group",
+              sliderInput("slider", "Slider with Default:", min = 1, max = 3, value = 1, step = 1),
+              tags$span("Default: '1'", class = "default-tag")
+          ),
+          div(class = "input-group",
+              textInput("optionalText", "Optional Text Input with Default:", value = "Default Value"),
+              tags$span("Optional", class = "optional-tag"),
+              tags$span("Default: 'Default Value'", class = "default-tag")
+          )
       ),
       
       actionButton("submit", "Submit")
@@ -73,10 +91,11 @@ ui <- fluidPage(
 # Define server logic
 server <- function(input, output) {
   observeEvent(input$submit, {
-    req(input$requiredText)  # Ensure the required text input is provided
+    req(input$requiredTextNoDefault)  # Ensure the required text input without default is provided
     
     output$output <- renderText({
-      paste("Required Text Input:", input$requiredText,
+      paste("Required Text Input (No Default):", input$requiredTextNoDefault,
+            "\nRequired Text Input (With Default):", input$requiredTextDefault,
             "\nOptional Numeric Input:", ifelse(is.null(input$optionalNumber), "Not provided", input$optionalNumber),
             "\nDropdown Selection:", input$dropdown,
             "\nOptional Text Input with Default:", input$optionalText)
